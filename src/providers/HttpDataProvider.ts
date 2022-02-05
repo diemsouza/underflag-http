@@ -1,9 +1,7 @@
-import { IDataProvider, DataModel, ValueType } from 'underflag';
+import { IDataProvider, DataModel, KeyValueType } from 'underflag';
 import axios, { AxiosRequestConfig } from 'axios';
 
-type KeyValue = { [x: string]: ValueType | KeyValue }
-
-interface Options {
+interface HttpDataProviderOptions {
     /** Url to get a json object or an array of json object */
     url: string,
     /** Header authorization eg. 'Bearer ...' */
@@ -13,9 +11,10 @@ interface Options {
 export class HttpDataProvider implements IDataProvider {
     private url: string;
     private token?: string;
-    private list: DataModel[] | undefined = undefined;
+    private data: DataModel[] = [];
+    private initialized: boolean = false;
 
-    constructor(options: Options) {
+    constructor(options: HttpDataProviderOptions) {
         this.url = options.url;
         this.token = options.token;
         const config: AxiosRequestConfig | undefined = {}
@@ -27,25 +26,33 @@ export class HttpDataProvider implements IDataProvider {
     }
 
     async getAll(): Promise<DataModel[]> {
-        const dataResult = await axios.get<KeyValue | DataModel[]>(this.url);
-        if (dataResult.data instanceof Array) {
-            this.list = dataResult.data as DataModel[];
+        const { data: dataResult } = await axios.get<KeyValueType | KeyValueType[]>(this.url);
+
+        if (dataResult instanceof Array) {
+            this.data = (dataResult as KeyValueType[])
+                .filter(a => a.key)
+                .map(a => ({
+                    key: a.key,
+                    value: a.value,
+                    description: a.description
+                })) as DataModel[];
+        } else {
+            const keys = Object.keys(dataResult);
+            this.data = keys.map(key => ({
+                key,
+                value: (dataResult as KeyValueType)[key]
+            })) as DataModel[];
         }
-        const _data = dataResult.data as KeyValue;
-        const keys = Object.keys(_data);
-        if (!keys.length) return [];
-        this.list = [];
-        keys.forEach(key => {
-            this.list?.push({ key, value: _data[key] })
-        })
-        return this.list !== undefined ? this.list : [];
+
+        this.initialized = true;
+        return this.data;
     }
 
     async get(key: string): Promise<DataModel | undefined> {
-        if (this.list === undefined) {
+        if (!this.initialized) {
             await this.getAll()
         }
-        const dataResult = this.list?.find(a => a.key === key)
+        const dataResult = this.data.find(a => a.key === key)
         if (!dataResult) return undefined;
         return dataResult as DataModel;
     }

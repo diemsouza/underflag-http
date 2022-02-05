@@ -1,6 +1,6 @@
 {
   "name": "underflag-http",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "http provider for underflag",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -51,6 +51,6 @@
   },
   "dependencies": {
     "axios": "^0.25.0",
-    "underflag": "^1.0.0"
+    "underflag": "^1.1.2"
   }
 }
