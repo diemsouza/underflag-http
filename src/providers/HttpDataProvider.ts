@@ -1,4 +1,4 @@
-import { IDataProvider, DataModel, KeyValueType } from 'underflag';
+import { IDataProvider, DataModel, JSONData, JSONObject } from 'underflag';
 import axios, { AxiosRequestConfig } from 'axios';
 
 interface HttpDataProviderOptions {
@@ -26,10 +26,10 @@ export class HttpDataProvider implements IDataProvider {
     }
 
     async getAll(): Promise<DataModel[]> {
-        const { data: dataResult } = await axios.get<KeyValueType | KeyValueType[]>(this.url);
+        const { data: dataResult } = await axios.get<JSONData>(this.url);
 
         if (dataResult instanceof Array) {
-            this.data = (dataResult as KeyValueType[])
+            this.data = (dataResult as JSONObject[])
                 .filter(a => a.key)
                 .map(a => ({
                     key: a.key,
@@ -40,7 +40,7 @@ export class HttpDataProvider implements IDataProvider {
             const keys = Object.keys(dataResult);
             this.data = keys.map(key => ({
                 key,
-                value: (dataResult as KeyValueType)[key]
+                value: (dataResult as JSONObject)[key]
             })) as DataModel[];
         }
 
