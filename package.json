@@ -1,6 +1,6 @@
 {
   "name": "underflag-http",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "http provider for underflag",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
     "http"
   ],
   "author": "Diego Souza",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/dieg0s0uza/underflag-http/issues"
   },
@@ -51,6 +51,6 @@
   },
   "dependencies": {
     "axios": "^0.25.0",
-    "underflag": "^1.2.0"
+    "underflag": "^1.3.0"
   }
 }
