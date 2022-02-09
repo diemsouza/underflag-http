@@ -27,7 +27,7 @@ describe('Data Provider', () => {
 
         test('should return two features', async () => {
             (axios.get as jest.Mock).mockImplementation(() => Promise.resolve({ data: { "test_a": true, "test_b": false } }));
-            const res = await underflag.getAll();
+            const res = await underflag.getAllFeatures();
             expect(res).toBeInstanceOf(Array);
             expect(res.length).toEqual(2);
             expect(res[0].value).toBeTruthy();
