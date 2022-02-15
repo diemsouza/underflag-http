@@ -1,4 +1,4 @@
-import { IDataProvider, Feature, JSONData, JSONObject } from 'underflag';
+import { IDataProvider, BaseFeature, JSONData, JSONObject } from 'underflag';
 import axios, { AxiosRequestConfig } from 'axios';
 
 interface HttpDataProviderOptions {
@@ -11,7 +11,7 @@ interface HttpDataProviderOptions {
 export class HttpDataProvider implements IDataProvider {
     private url: string;
     private token?: string;
-    private data: Feature[] = [];
+    private data: BaseFeature[] = [];
     private initialized: boolean = false;
 
     constructor(options: HttpDataProviderOptions) {
@@ -25,7 +25,7 @@ export class HttpDataProvider implements IDataProvider {
         }
     }
 
-    async getAll(): Promise<Feature[]> {
+    async getAll(): Promise<BaseFeature[]> {
         const { data: dataResult } = await axios.get<JSONData>(this.url);
 
         if (dataResult instanceof Array) {
@@ -35,25 +35,25 @@ export class HttpDataProvider implements IDataProvider {
                     key: a.key,
                     value: a.value,
                     description: a.description
-                })) as Feature[];
+                })) as BaseFeature[];
         } else {
             const keys = Object.keys(dataResult);
             this.data = keys.map(key => ({
                 key,
                 value: (dataResult as JSONObject)[key]
-            })) as Feature[];
+            })) as BaseFeature[];
         }
 
         this.initialized = true;
         return this.data;
     }
 
-    async get(key: string): Promise<Feature | undefined> {
+    async get(key: string): Promise<BaseFeature | undefined> {
         if (!this.initialized) {
             await this.getAll()
         }
         const dataResult = this.data.find(a => a.key === key)
         if (!dataResult) return undefined;
-        return dataResult as Feature;
+        return dataResult as BaseFeature;
     }
 }
