@@ -1,11 +1,14 @@
 import { IDataProvider, BaseFeature, JSONData, JSONObject } from 'underflag';
 import axios, { AxiosRequestConfig } from 'axios';
+import getValue from 'lodash.get';
 
 interface HttpDataProviderOptions {
     /** Url to get a json object or an array of json object */
     url: string,
     /** Header authorization eg. 'Bearer ...' */
-    token?: string
+    token?: string,
+    /** Path of nested data */
+    nestedField?: string
 }
 
 export class HttpDataProvider implements IDataProvider {
@@ -13,10 +16,12 @@ export class HttpDataProvider implements IDataProvider {
     private token?: string;
     private data: BaseFeature[] = [];
     private initialized: boolean = false;
+    private nestedField?: string;
 
     constructor(options: HttpDataProviderOptions) {
         this.url = options.url;
         this.token = options.token;
+        this.nestedField = options.nestedField;
         const config: AxiosRequestConfig | undefined = {}
         if (this.token) {
             config.headers = {
@@ -27,9 +32,9 @@ export class HttpDataProvider implements IDataProvider {
 
     async getAll(): Promise<BaseFeature[]> {
         const { data: dataResult } = await axios.get<JSONData>(this.url);
-
-        if (dataResult instanceof Array) {
-            this.data = (dataResult as JSONObject[])
+        const _dataResult: JSONData = this.nestedField ? getValue(dataResult, this.nestedField) : dataResult;
+        if (_dataResult instanceof Array) {
+            this.data = (_dataResult as JSONObject[])
                 .filter(a => a.key)
                 .map(a => ({
                     key: a.key,
@@ -37,10 +42,10 @@ export class HttpDataProvider implements IDataProvider {
                     description: a.description
                 })) as BaseFeature[];
         } else {
-            const keys = Object.keys(dataResult);
+            const keys = Object.keys(_dataResult);
             this.data = keys.map(key => ({
                 key,
-                value: (dataResult as JSONObject)[key]
+                value: (_dataResult as JSONObject)[key]
             })) as BaseFeature[];
         }
 

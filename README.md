@@ -25,7 +25,9 @@ Import the underflag and prepare to load data provider
 import { Underflag } from "underflag";
 import { HttpDataProvider } from "underflag-http";
 
-const dataProvider = new HttpDataProvider({ url: 'http://localhost:3000/features' });
+const dataProvider = new HttpDataProvider({ 
+    url: 'http://localhost:3000/features' 
+});
 const underflag = new Underflag({ dataProvider });
 if (await underflag.isOn("feature")) {
     // ...
@@ -35,14 +37,14 @@ if (await underflag.isOn("feature")) {
 _Important: The url need return a json object or an array of json object_
 
 Eg. json object: 
-```
+```json
 {
     "feature": true
 }
 ```
 
 Eg. array of json object: 
-```
+```json
 [
     {
         "key": "feature",
@@ -50,6 +52,28 @@ Eg. array of json object:
     }
 ]
 ```
+
+If you need getting data from nested field like:
+```json
+{
+    "data": [
+        {
+            "key": "feature",
+            "value": true
+        }
+    ]
+}
+```
+
+You can setting the path of the field:
+```js
+const dataProvider = new HttpDataProvider({
+    url: 'http://localhost:3000/features',
+    nestedField: 'data'
+});
+```
+
+The nestedField option use lodash.get, know more about lodash.get on https://lodash.com/docs#get
 
 Know more on [underflag npm page](https://www.npmjs.com/package/underflag)
 
