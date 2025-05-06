@@ -1,6 +1,10 @@
 
 # HTTP Provider
 
+> ⚠️ This repository has been **archived** for visual organization on GitHub.  
+> It is part of the [`underflag`](https://github.com/diemsouza/underflag) monorepo, where it's maintained and updated.  
+> The package is still available on [NPM](https://www.npmjs.com/package/underflag-http).
+
 This is a HTTP provider for underflag (feature flag/feature toggle) than help your app to load the features from a json object or an array of json object from web. You can get easly from the Github json file, AWS S3 or a Rest API with custom token too. 
 
 ## Install
